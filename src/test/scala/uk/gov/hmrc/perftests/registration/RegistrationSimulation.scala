@@ -1,7 +1,7 @@
 /*
  * Copyright 2025 HM Revenue & Customs
  *
- * * Licensed under the Apache License, Version 2.0 (the "License");
+ * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
@@ -21,8 +21,37 @@ import uk.gov.hmrc.perftests.registration.RegistrationRequests._
 
 class RegistrationSimulation extends PerformanceTestRunner {
 
-  setup("registration", "IOSS NETP Registration Journey") withRequests
-    navigateToHomePage
+  setup("registrationUkVrn", "IOSS NETP Registration Journey - UK Based VRN") withRequests
+    (
+      getAuthorityWizard,
+      postAuthorityWizard,
+      getClientUkBased,
+      postClientUkBased(true),
+      getClientHasVatNumber,
+      postClientHasVatNumber,
+      getClientVatNumber,
+      postClientVatNumber,
+      getConfirmVatDetails,
+      postConfirmVatDetails
+    )
+
+  setup("registrationNonUk", "IOSS NETP Registration Journey - Non-UK based") withRequests
+    (
+      getAuthorityWizard,
+      postAuthorityWizard,
+      getClientUkBased,
+      postClientUkBased(false),
+      getClientCountryBased,
+      postClientCountryBased,
+      getClientCountryBased,
+      postClientCountryBased,
+      getClientBusinessName,
+      postClientBusinessName,
+      getClientAddress,
+      postClientAddress,
+      getConfirmVatDetails,
+      postConfirmVatDetailsContinue
+    )
 
   runSimulation()
 }
