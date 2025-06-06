@@ -32,7 +32,15 @@ class RegistrationSimulation extends PerformanceTestRunner {
       getClientVatNumber,
       postClientVatNumber,
       getConfirmVatDetails,
-      postConfirmVatDetails
+      postConfirmVatDetails,
+      getWebsite(1),
+      postWebsite(1, "www.websiteone.com"),
+      getAddWebsite,
+      postAddWebsite(true, Some(2)),
+      getWebsite(2),
+      postWebsite(2, "www.anotherwebsite.com"),
+      getAddWebsite,
+      postAddWebsite(false, None)
     )
 
   setup("registrationNonUk", "IOSS NETP Registration Journey - Non-UK based") withRequests
@@ -50,7 +58,15 @@ class RegistrationSimulation extends PerformanceTestRunner {
       getClientAddress,
       postClientAddress,
       getConfirmVatDetails,
-      postConfirmVatDetailsContinue
+      postConfirmVatDetailsContinue,
+      getWebsite(1),
+      postWebsite(1, "website1.com"),
+      getAddWebsite,
+      postAddWebsite(true, Some(2)),
+      getWebsite(2),
+      postWebsite(2, "http://another-website.test"),
+      getAddWebsite,
+      postAddWebsite(false, None)
     )
 
   runSimulation()
