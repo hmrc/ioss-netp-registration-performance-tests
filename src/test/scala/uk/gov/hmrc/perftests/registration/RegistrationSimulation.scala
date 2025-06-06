@@ -33,6 +33,14 @@ class RegistrationSimulation extends PerformanceTestRunner {
       postClientVatNumber,
       getConfirmVatDetails,
       postConfirmVatDetails,
+      getWebsite(1),
+      postWebsite(1, "www.websiteone.com"),
+      getAddWebsite,
+      postAddWebsite(true, Some(2)),
+      getWebsite(2),
+      postWebsite(2, "www.anotherwebsite.com"),
+      getAddWebsite,
+      postAddWebsite(false, None),
       getBusinessContactDetails,
       postBusinessContactDetails
     )
@@ -53,6 +61,14 @@ class RegistrationSimulation extends PerformanceTestRunner {
       postClientAddress,
       getConfirmVatDetails,
       postConfirmVatDetailsContinue,
+      getWebsite(1),
+      postWebsite(1, "website1.com"),
+      getAddWebsite,
+      postAddWebsite(true, Some(2)),
+      getWebsite(2),
+      postWebsite(2, "http://another-website.test"),
+      getAddWebsite,
+      postAddWebsite(false, None),
       getBusinessContactDetails,
       postBusinessContactDetails
     )
