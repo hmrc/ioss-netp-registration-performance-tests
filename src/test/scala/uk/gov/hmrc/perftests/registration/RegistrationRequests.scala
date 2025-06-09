@@ -228,8 +228,7 @@ object RegistrationRequests extends ServicesConfiguration {
         .check(header("Location").is(s"$route/website-address/${index.get}"))
     } else {
       testAddWebsite(answer)
-//      next page is not developed yet
-//        .check(header("Location").is(s"$route/business-contact-details"))
+        .check(header("Location").is(s"$route/business-contact-details"))
     }
 
   def getBusinessContactDetails =
