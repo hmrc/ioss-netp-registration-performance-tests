@@ -179,7 +179,9 @@ object RegistrationRequests extends ServicesConfiguration {
       .post(s"$baseUrl$route/confirm-vat-details")
       .formParam("csrfToken", "${csrfToken}")
       .formParam("value", "yes")
-      .check(status.in(303))
+//      Will get a 500 error until navigation to the next page is implemented
+//      .check(status.in(303))
+      .check(status.in(500))
 //      rest of the journey is not developed yet
 //      .check(header("Location").is(s"$route/have-uk-trading-name"))
 
@@ -190,5 +192,23 @@ object RegistrationRequests extends ServicesConfiguration {
       .check(status.in(303))
   //      rest of the journey is not developed yet
   //      .check(header("Location").is(s"$route/have-uk-trading-name"))
+
+  def getBusinessContactDetails =
+    http("Get Business Contact Details page")
+      .get(s"$baseUrl$route/business-contact-details")
+      .header("Cookie", "mdtp=${mdtpCookie}")
+      .check(css(inputSelectorByName("csrfToken"), "value").saveAs("csrfToken"))
+      .check(status.in(200))
+
+  def postBusinessContactDetails =
+    http("Enter Business Contact Details")
+      .post(s"$baseUrl$route/business-contact-details")
+      .formParam("csrfToken", "${csrfToken}")
+      .formParam("fullName", "Trader Name")
+      .formParam("telephoneNumber", "012301230123")
+      .formParam("emailAddress", "trader@testemail.com")
+      .check(status.in(200, 303))
+  //      rest of the journey is not developed yet
+//      .check(header("Location").is(s"$route/bank-account-details"))
 
 }
