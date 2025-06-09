@@ -193,6 +193,44 @@ object RegistrationRequests extends ServicesConfiguration {
   //      rest of the journey is not developed yet
   //      .check(header("Location").is(s"$route/have-uk-trading-name"))
 
+  def getWebsite(index: Int) =
+    http(s"Get Website page $index")
+      .get(s"$baseUrl$route/website-address/$index")
+      .header("Cookie", "mdtp=${mdtpCookie}")
+      .check(css(inputSelectorByName("csrfToken"), "value").saveAs("csrfToken"))
+      .check(status.in(200))
+
+  def postWebsite(index: Int, website: String) =
+    http(s"Enter website $index")
+      .post(s"$baseUrl$route/website-address/$index")
+      .formParam("csrfToken", "${csrfToken}")
+      .formParam("value", website)
+      .check(status.in(303))
+      .check(header("Location").is(s"$route/add-website-address"))
+
+  def getAddWebsite =
+    http("Get Add Website page")
+      .get(s"$baseUrl$route/add-website-address")
+      .header("Cookie", "mdtp=${mdtpCookie}")
+      .check(css(inputSelectorByName("csrfToken"), "value").saveAs("csrfToken"))
+      .check(status.in(200))
+
+  def testAddWebsite(answer: Boolean) =
+    http("Add Website")
+      .post(s"$baseUrl$route/add-website-address")
+      .formParam("csrfToken", "${csrfToken}")
+      .formParam("value", answer)
+      .check(status.in(200, 303))
+
+  def postAddWebsite(answer: Boolean, index: Option[Int]) =
+    if (answer) {
+      testAddWebsite(answer)
+        .check(header("Location").is(s"$route/website-address/${index.get}"))
+    } else {
+      testAddWebsite(answer)
+        .check(header("Location").is(s"$route/business-contact-details"))
+    }
+
   def getBusinessContactDetails =
     http("Get Business Contact Details page")
       .get(s"$baseUrl$route/business-contact-details")
