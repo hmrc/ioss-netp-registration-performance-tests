@@ -32,7 +32,9 @@ class RegistrationSimulation extends PerformanceTestRunner {
       getClientVatNumber,
       postClientVatNumber,
       getConfirmVatDetails,
-      postConfirmVatDetails
+      postConfirmVatDetails,
+      getBusinessContactDetails,
+      postBusinessContactDetails
     )
 
   setup("registrationNonUk", "IOSS NETP Registration Journey - Non-UK based") withRequests
@@ -50,7 +52,9 @@ class RegistrationSimulation extends PerformanceTestRunner {
       getClientAddress,
       postClientAddress,
       getConfirmVatDetails,
-      postConfirmVatDetailsContinue
+      postConfirmVatDetailsContinue,
+      getBusinessContactDetails,
+      postBusinessContactDetails
     )
 
   runSimulation()
