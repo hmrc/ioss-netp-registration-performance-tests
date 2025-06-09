@@ -179,9 +179,7 @@ object RegistrationRequests extends ServicesConfiguration {
       .post(s"$baseUrl$route/confirm-vat-details")
       .formParam("csrfToken", "${csrfToken}")
       .formParam("value", "yes")
-//      Will get a 500 error until navigation to the next page is implemented
-//      .check(status.in(303))
-      .check(status.in(500))
+      .check(status.in(303))
 //      rest of the journey is not developed yet
 //      .check(header("Location").is(s"$route/have-uk-trading-name"))
 
