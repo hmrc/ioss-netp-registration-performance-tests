@@ -42,7 +42,9 @@ class RegistrationSimulation extends PerformanceTestRunner {
       getAddWebsite,
       postAddWebsite(false, None),
       getBusinessContactDetails,
-      postBusinessContactDetails
+      postBusinessContactDetails,
+      getDeclaration,
+      postDeclaration
     )
 
   setup("registrationNonUk", "IOSS NETP Registration Journey - Non-UK based") withRequests
@@ -70,7 +72,9 @@ class RegistrationSimulation extends PerformanceTestRunner {
       getAddWebsite,
       postAddWebsite(false, None),
       getBusinessContactDetails,
-      postBusinessContactDetails
+      postBusinessContactDetails,
+      getDeclaration,
+      postDeclaration
     )
 
   runSimulation()
