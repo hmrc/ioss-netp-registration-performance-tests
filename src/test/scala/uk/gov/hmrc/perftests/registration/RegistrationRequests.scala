@@ -48,10 +48,14 @@ object RegistrationRequests extends ServicesConfiguration {
       .formParam("email", "user@test.com")
       .formParam("credentialRole", "User")
       .formParam("redirectionUrl", baseUrl + route)
-      .formParam("enrolment[0].name", "HMRC-IOSS-INT")
-      .formParam("enrolment[0].taxIdentifier[0].name", "IntNumber")
-      .formParam("enrolment[0].taxIdentifier[0].value", "IN2501234567")
+      .formParam("enrolment[0].name", "HMRC-MTD-VAT")
+      .formParam("enrolment[0].taxIdentifier[0].name", "VRN")
+      .formParam("enrolment[0].taxIdentifier[0].value", "100000001")
       .formParam("enrolment[0].state", "Activated")
+      .formParam("enrolment[1].name", "HMRC-IOSS-INT")
+      .formParam("enrolment[1].taxIdentifier[0].name", "IntNumber")
+      .formParam("enrolment[1].taxIdentifier[0].value", "IN2501234567")
+      .formParam("enrolment[1].state", "Activated")
       .check(status.in(200, 303))
       .check(headerRegex("Set-Cookie", """mdtp=(.*)""").saveAs("mdtpCookie"))
 
@@ -245,6 +249,21 @@ object RegistrationRequests extends ServicesConfiguration {
       .formParam("emailAddress", "trader@testemail.com")
       .check(status.in(200, 303))
   //      rest of the journey is not developed yet
-//      .check(header("Location").is(s"$route/bank-account-details"))
+//      .check(header("Location").is(s"$route/check-your-answers"))
+
+  def getDeclaration =
+    http("Get Declaration page")
+      .get(s"$baseUrl$route/declaration")
+      .check(css(inputSelectorByName("csrfToken"), "value").saveAs("csrfToken"))
+      .check(status.in(200))
+
+  def postDeclaration =
+    http("Post Declaration page")
+      .post(s"$baseUrl$route/declaration")
+      .formParam("csrfToken", "${csrfToken}")
+      .formParam("declaration", "true")
+      .check(status.in(303))
+  //      rest of the journey is not developed yet
+  //      .check(header("Location").is(s"$route/pending-registration"))
 
 }
