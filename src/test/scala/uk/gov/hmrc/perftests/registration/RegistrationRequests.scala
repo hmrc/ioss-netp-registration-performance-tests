@@ -184,7 +184,7 @@ object RegistrationRequests extends ServicesConfiguration {
       .formParam("csrfToken", "${csrfToken}")
       .formParam("value", "yes")
       .check(status.in(303))
-//      rest of the journey is not developed yet
+//      requires a fix to confirm-vat-details
 //      .check(header("Location").is(s"$route/have-uk-trading-name"))
 
   def postConfirmVatDetailsContinue =
@@ -192,8 +192,60 @@ object RegistrationRequests extends ServicesConfiguration {
       .post(s"$baseUrl$route/confirm-vat-details")
       .formParam("csrfToken", "${csrfToken}")
       .check(status.in(303))
-  //      rest of the journey is not developed yet
+  //      requires a fix to confirm-vat-details
   //      .check(header("Location").is(s"$route/have-uk-trading-name"))
+
+  def getHaveUkTradingName =
+    http("Get Have UK Trading Name page")
+      .get(s"$baseUrl$route/have-uk-trading-name")
+      .check(css(inputSelectorByName("csrfToken"), "value").saveAs("csrfToken"))
+      .check(status.in(200))
+
+  def postHaveUkTradingName =
+    http("Post Have UK Trading Name page")
+      .post(s"$baseUrl$route/have-uk-trading-name")
+      .formParam("csrfToken", "${csrfToken}")
+      .formParam("value", true)
+      .check(status.in(303))
+      .check(header("Location").is(s"$route/uk-trading-name/1"))
+
+  def getUkTradingName(index: Int) =
+    http("Get UK Trading Name page")
+      .get(s"$baseUrl$route/uk-trading-name/$index")
+      .check(css(inputSelectorByName("csrfToken"), "value").saveAs("csrfToken"))
+      .check(status.in(200))
+
+  def postUkTradingName(index: Int, tradingName: String) =
+    http("Post UK Trading Name page")
+      .post(s"$baseUrl$route/uk-trading-name/$index")
+      .formParam("csrfToken", "${csrfToken}")
+      .formParam("value", tradingName)
+      .check(status.in(303))
+      .check(header("Location").is(s"$route/add-uk-trading-name"))
+
+  def getAddTradingName =
+    http("Get Add Trading Name page")
+      .get(s"$baseUrl$route/add-uk-trading-name")
+      .header("Cookie", "mdtp=${mdtpCookie}")
+      .check(css(inputSelectorByName("csrfToken"), "value").saveAs("csrfToken"))
+      .check(status.in(200))
+
+  def testAddTradingName(answer: Boolean) =
+    http("Add Trading Name")
+      .post(s"$baseUrl$route/add-uk-trading-name")
+      .formParam("csrfToken", "${csrfToken}")
+      .formParam("value", answer)
+      .check(status.in(200, 303))
+
+  def postAddTradingName(answer: Boolean, index: Option[Int]) =
+    if (answer) {
+      testAddTradingName(answer)
+        .check(header("Location").is(s"$route/uk-trading-name/${index.get}"))
+    } else {
+      testAddTradingName(answer)
+//        next section not developed yet
+//        .check(header("Location").is(s"$route/has-previously-registered-as-intermediary"))
+    }
 
   def getWebsite(index: Int) =
     http(s"Get Website page $index")
