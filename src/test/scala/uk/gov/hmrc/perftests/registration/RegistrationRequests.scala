@@ -300,12 +300,28 @@ object RegistrationRequests extends ServicesConfiguration {
       .formParam("telephoneNumber", "012301230123")
       .formParam("emailAddress", "trader@testemail.com")
       .check(status.in(200, 303))
-  //      rest of the journey is not developed yet
-//      .check(header("Location").is(s"$route/check-your-answers"))
+      .check(header("Location").is(s"$route/check-your-answers"))
+
+  def getCheckYourAnswers =
+    http("Get Check Your Answers page")
+      .get(s"$baseUrl$route/check-your-answers")
+      .header("Cookie", "mdtp=${mdtpCookie}")
+      .check(css(inputSelectorByName("csrfToken"), "value").saveAs("csrfToken"))
+      .check(status.in(200))
+
+  def postCheckYourAnswers =
+    http("Post Check Your Answers page")
+      .post(s"$baseUrl$route/check-your-answers")
+//      Completion checks not added yet
+//      .post(s"$baseUrl$route/check-your-answers/false?waypoints=check-your-answers")
+      .formParam("csrfToken", "${csrfToken}")
+      .check(status.in(200, 303))
+      .check(header("Location").is(s"$route/declaration"))
 
   def getDeclaration =
     http("Get Declaration page")
       .get(s"$baseUrl$route/declaration")
+      .header("Cookie", "mdtp=${mdtpCookie}")
       .check(css(inputSelectorByName("csrfToken"), "value").saveAs("csrfToken"))
       .check(status.in(200))
 
@@ -315,7 +331,12 @@ object RegistrationRequests extends ServicesConfiguration {
       .formParam("csrfToken", "${csrfToken}")
       .formParam("declaration", "true")
       .check(status.in(303))
-  //      rest of the journey is not developed yet
-  //      .check(header("Location").is(s"$route/pending-registration"))
+      .check(header("Location").is(s"$route/client-application-complete"))
+
+  def getClientApplicationComplete =
+    http("Get Client Application Complete page")
+      .get(s"$baseUrl$route/client-application-complete")
+      .header("Cookie", "mdtp=${mdtpCookie}")
+      .check(status.in(200))
 
 }
