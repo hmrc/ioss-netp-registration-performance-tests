@@ -65,21 +65,13 @@ object RegistrationRequests extends ServicesConfiguration {
       .check(css(inputSelectorByName("csrfToken"), "value").saveAs("csrfToken"))
       .check(status.in(200))
 
-  def testClientUkBased(answer: Boolean) =
+  def postClientUkBased(answer: Boolean) =
     http("Post Client UK Based page")
       .post(s"$baseUrl$route/client-uk-based")
       .formParam("csrfToken", "${csrfToken}")
       .formParam("value", answer)
       .check(status.in(303))
-
-  def postClientUkBased(answer: Boolean) =
-    if (answer) {
-      testClientUkBased(answer)
-        .check(header("Location").is(s"$route/client-has-vat-number"))
-    } else {
-      testClientUkBased(answer)
-        .check(header("Location").is(s"$route/client-country-based"))
-    }
+      .check(header("Location").is(s"$route/client-has-vat-number"))
 
   def getClientHasVatNumber =
     http("Get Client Has Vat Number page")
@@ -87,13 +79,24 @@ object RegistrationRequests extends ServicesConfiguration {
       .check(css(inputSelectorByName("csrfToken"), "value").saveAs("csrfToken"))
       .check(status.in(200))
 
-  def postClientHasVatNumber =
+  def testClientHasVatNumber(answer: Boolean) =
     http("Post Client Has Vat Number page")
       .post(s"$baseUrl$route/client-has-vat-number")
       .formParam("csrfToken", "${csrfToken}")
-      .formParam("value", true)
-      .check(status.in(303))
-      .check(header("Location").is(s"$route/client-vat-number"))
+      .formParam("value", answer)
+      .check(status.in(200, 303))
+
+  def postClientHasVatNumber(answer: Boolean, ukRoute: Boolean) =
+    if (answer) {
+      testClientHasVatNumber(answer)
+        .check(header("Location").is(s"$route/client-vat-number"))
+    } else if (!ukRoute) {
+      testClientHasVatNumber(answer)
+        .check(header("Location").is(s"$route/client-country-based"))
+    } else {
+      testClientHasVatNumber(answer)
+        .check(header("Location").is(s"$route/client-business-name"))
+    }
 
   def getClientVatNumber =
     http("Get Client Vat Number page")
@@ -123,7 +126,7 @@ object RegistrationRequests extends ServicesConfiguration {
       .formParam("csrfToken", "${csrfToken}")
       .formParam("value", "NZ")
       .check(status.in(200, 303))
-      .check(header("Location").is(s"$route/client-business-name"))
+      .check(header("Location").is(s"$route/client-tax-reference"))
 
   def getClientBusinessName =
     http("Get Client Business Name page")
@@ -138,7 +141,7 @@ object RegistrationRequests extends ServicesConfiguration {
       .formParam("csrfToken", "${csrfToken}")
       .formParam("value", "Company Name")
       .check(status.in(200, 303))
-      .check(header("Location").is(s"$route/client-tax-reference"))
+      .check(header("Location").is(s"$route/client-address"))
 
   def getClientTaxReference =
     http("Get Client Tax Reference page")
@@ -153,7 +156,7 @@ object RegistrationRequests extends ServicesConfiguration {
       .formParam("csrfToken", "${csrfToken}")
       .formParam("value", "ABC123DEF1")
       .check(status.in(200, 303))
-      .check(header("Location").is(s"$route/client-address"))
+      .check(header("Location").is(s"$route/client-business-name"))
 
   def getClientAddress =
     http("Get Client address page")
@@ -182,18 +185,8 @@ object RegistrationRequests extends ServicesConfiguration {
     http("Post Confirm VAT Details page")
       .post(s"$baseUrl$route/confirm-vat-details")
       .formParam("csrfToken", "${csrfToken}")
-      .formParam("value", "yes")
       .check(status.in(303))
-//      requires a fix to confirm-vat-details
-//      .check(header("Location").is(s"$route/have-uk-trading-name"))
-
-  def postConfirmVatDetailsContinue =
-    http("Post Confirm VAT Details page")
-      .post(s"$baseUrl$route/confirm-vat-details")
-      .formParam("csrfToken", "${csrfToken}")
-      .check(status.in(303))
-  //      requires a fix to confirm-vat-details
-  //      .check(header("Location").is(s"$route/have-uk-trading-name"))
+      .check(header("Location").is(s"$route/have-uk-trading-name"))
 
   def getHaveUkTradingName =
     http("Get Have UK Trading Name page")
