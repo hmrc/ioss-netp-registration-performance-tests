@@ -236,9 +236,126 @@ object RegistrationRequests extends ServicesConfiguration {
         .check(header("Location").is(s"$route/uk-trading-name/${index.get}"))
     } else {
       testAddTradingName(answer)
-//        next section not developed yet
-//        .check(header("Location").is(s"$route/has-previously-registered-as-intermediary"))
+//        not currently navigating
+//        .check(header("Location").is(s"$route/previous-oss"))
     }
+
+  def postPreviousOss(index: Int) =
+    http("Answer Previous Oss Page")
+      .post(s"$baseUrl$route/previous-oss")
+      .formParam("csrfToken", "${csrfToken}")
+      .formParam("value", "true")
+      .check(status.in(200, 303))
+      .check(header("Location").is(s"$route/previous-country/$index"))
+
+  def getPreviousCountry(index: Int) =
+    http("Get previous country page")
+      .get(s"$baseUrl$route/previous-country/$index")
+      .header("Cookie", "mdtp=${mdtpCookie}")
+      .check(css(inputSelectorByName("csrfToken"), "value").saveAs("csrfToken"))
+      .check(status.in(200))
+
+  def postPreviousCountry(countryIndex: Int, schemeIndex: Int, countryCode: String) =
+    http("Enter previous country")
+      .post(s"$baseUrl$route/previous-country/$countryIndex")
+      .formParam("csrfToken", "${csrfToken}")
+      .formParam("value", countryCode)
+      .check(status.in(200, 303))
+      .check(header("Location").is(s"$route/previous-scheme/$countryIndex/$schemeIndex"))
+
+  def getPreviousScheme(countryIndex: Int, schemeIndex: Int) =
+    http("Get Previous Scheme page")
+      .get(s"$baseUrl$route/previous-scheme/$countryIndex/$schemeIndex")
+      .header("Cookie", "mdtp=${mdtpCookie}")
+      .check(css(inputSelectorByName("csrfToken"), "value").saveAs("csrfToken"))
+      .check(status.in(200))
+
+  def testPreviousScheme(countryIndex: Int, schemeIndex: Int, schemeType: String) =
+    http("Answer Previous Scheme")
+      .post(s"$baseUrl$route/previous-scheme/$countryIndex/$schemeIndex")
+      .formParam("csrfToken", "${csrfToken}")
+      .formParam("value", schemeType)
+      .check(status.in(200, 303))
+
+  def postPreviousScheme(countryIndex: Int, schemeIndex: Int, schemeType: String) =
+    if (schemeType == "oss") {
+      testPreviousScheme(countryIndex, schemeIndex, schemeType)
+        .check(header("Location").is(s"$route/previous-oss-scheme-number/$countryIndex/$schemeIndex"))
+    } else {
+      testPreviousScheme(countryIndex, schemeIndex, schemeType)
+        .check(header("Location").is(s"$route/previous-ioss-number/$countryIndex/$schemeIndex"))
+    }
+
+  def getPreviousOssSchemeNumber(countryIndex: Int, schemeIndex: Int) =
+    http("Get Previous Oss Scheme number page")
+      .get(s"$baseUrl$route/previous-oss-scheme-number/$countryIndex/$schemeIndex")
+      .header("Cookie", "mdtp=${mdtpCookie}")
+      .check(css(inputSelectorByName("csrfToken"), "value").saveAs("csrfToken"))
+      .check(status.in(200))
+
+  def postPreviousOssSchemeNumber(countryIndex: Int, schemeIndex: Int, registrationNumber: String) =
+    http("Enter Previous Oss Scheme Number")
+      .post(s"$baseUrl$route/previous-oss-scheme-number/$countryIndex/$schemeIndex")
+      .formParam("csrfToken", "${csrfToken}")
+      .formParam("value", registrationNumber)
+      .check(status.in(200, 303))
+      .check(header("Location").is(s"$route/previous-scheme-answers/$countryIndex"))
+
+  def getPreviousSchemeAnswers(index: Int) =
+    http("Get Previous Scheme Answers page")
+      .get(s"$baseUrl$route/previous-scheme-answers/$index")
+      .header("Cookie", "mdtp=${mdtpCookie}")
+      .check(css(inputSelectorByName("csrfToken"), "value").saveAs("csrfToken"))
+      .check(status.in(200))
+
+  def postPreviousSchemeAnswers(index: Int, answer: Boolean) =
+    http("Post Previous Scheme Answers page")
+      .post(s"$baseUrl$route/previous-scheme-answers/$index")
+      .formParam("csrfToken", "${csrfToken}")
+      .formParam("value", answer)
+      .check(status.in(200, 303))
+      .check(header("Location").is(s"$route/previous-schemes-overview"))
+
+  def getPreviousSchemesOverview =
+    http("Get Previous Schemes Overview page")
+      .get(s"$baseUrl$route/previous-schemes-overview")
+      .header("Cookie", "mdtp=${mdtpCookie}")
+      .check(css(inputSelectorByName("csrfToken"), "value").saveAs("csrfToken"))
+      .check(status.in(200))
+
+  def testPreviousSchemesOverview(answer: Boolean) =
+    http("Previous Schemes Overview")
+//      completion checks not done yet
+//      .post(s"$baseUrl$route/previous-schemes-overview?incompletePromptShown=false")
+      .post(s"$baseUrl$route/previous-schemes-overview")
+      .formParam("csrfToken", "${csrfToken}")
+      .formParam("value", answer)
+      .check(status.in(200, 303))
+
+  def postPreviousSchemesOverview(answer: Boolean, index: Option[Int]) =
+    if (answer) {
+      testPreviousSchemesOverview(answer)
+        .check(header("Location").is(s"$route/previous-country/${index.get}"))
+    } else {
+      testPreviousSchemesOverview(answer)
+//        next section not developed yet
+//        .check(header("Location").is(s"$route/tax-in-eu"))
+    }
+
+  def getPreviousIossNumber(countryIndex: Int, schemeIndex: Int) =
+    http("Get Previous IOSS number page")
+      .get(s"$baseUrl$route/previous-ioss-number/$countryIndex/$schemeIndex")
+      .header("Cookie", "mdtp=${mdtpCookie}")
+      .check(css(inputSelectorByName("csrfToken"), "value").saveAs("csrfToken"))
+      .check(status.in(200))
+
+  def postPreviousIossNumber(countryIndex: Int, schemeIndex: Int, iossNumber: String) =
+    http("Previous IOSS Number")
+      .post(s"$baseUrl$route/previous-ioss-number/$countryIndex/$schemeIndex")
+      .formParam("csrfToken", "${csrfToken}")
+      .formParam("previousSchemeNumber", iossNumber)
+      .check(status.in(200, 303))
+      .check(header("Location").is(s"$route/previous-scheme-answers/$countryIndex"))
 
   def getWebsite(index: Int) =
     http(s"Get Website page $index")
