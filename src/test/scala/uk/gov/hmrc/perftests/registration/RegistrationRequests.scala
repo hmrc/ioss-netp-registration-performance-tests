@@ -236,8 +236,7 @@ object RegistrationRequests extends ServicesConfiguration {
         .check(header("Location").is(s"$route/uk-trading-name/${index.get}"))
     } else {
       testAddTradingName(answer)
-//        not currently navigating
-//        .check(header("Location").is(s"$route/previous-oss"))
+        .check(header("Location").is(s"$route/previous-oss"))
     }
 
   def postPreviousOss(index: Int) =
@@ -353,7 +352,7 @@ object RegistrationRequests extends ServicesConfiguration {
     http("Previous IOSS Number")
       .post(s"$baseUrl$route/previous-ioss-number/$countryIndex/$schemeIndex")
       .formParam("csrfToken", "${csrfToken}")
-      .formParam("previousSchemeNumber", iossNumber)
+      .formParam("value", iossNumber)
       .check(status.in(200, 303))
       .check(header("Location").is(s"$route/previous-scheme-answers/$countryIndex"))
 
