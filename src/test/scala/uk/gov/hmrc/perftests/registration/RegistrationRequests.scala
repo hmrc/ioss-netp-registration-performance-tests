@@ -337,8 +337,7 @@ object RegistrationRequests extends ServicesConfiguration {
         .check(header("Location").is(s"$route/previous-country/${index.get}"))
     } else {
       testPreviousSchemesOverview(answer)
-//        next section not developed yet
-//        .check(header("Location").is(s"$route/tax-in-eu"))
+        .check(header("Location").is(s"$route/eu-fixed-establishment"))
     }
 
   def getPreviousIossNumber(countryIndex: Int, schemeIndex: Int) =
@@ -355,6 +354,149 @@ object RegistrationRequests extends ServicesConfiguration {
       .formParam("value", iossNumber)
       .check(status.in(200, 303))
       .check(header("Location").is(s"$route/previous-scheme-answers/$countryIndex"))
+
+  def getEuFixedEstablishment =
+    http("Get Eu Fixed Establishment page")
+      .get(s"$baseUrl$route/eu-fixed-establishment")
+      .header("Cookie", "mdtp=${mdtpCookie}")
+      .check(css(inputSelectorByName("csrfToken"), "value").saveAs("csrfToken"))
+      .check(status.in(200))
+
+  def postEuFixedEstablishment(index: Int) =
+    http("Answer Eu Fixed Establishment")
+      .post(s"$baseUrl$route/eu-fixed-establishment")
+      .formParam("csrfToken", "${csrfToken}")
+      .formParam("value", "true")
+      .check(status.in(200, 303))
+      .check(header("Location").is(s"$route/vat-registered-eu-country/$index"))
+
+  def getVatRegisteredEuCountry(index: Int) =
+    http("Get Vat Registered Eu Country page")
+      .get(s"$baseUrl$route/vat-registered-eu-country/$index")
+      .header("Cookie", "mdtp=${mdtpCookie}")
+      .check(css(inputSelectorByName("csrfToken"), "value").saveAs("csrfToken"))
+      .check(status.in(200))
+
+  def postVatRegisteredEuCountry(index: Int, countryCode: String) =
+    http("Enter Vat Registered Eu Country State")
+      .post(s"$baseUrl$route/vat-registered-eu-country/$index")
+      .formParam("csrfToken", "${csrfToken}")
+      .formParam("value", countryCode)
+      .check(status.in(200, 303))
+      .check(header("Location").is(s"$route/trading-name-business-address/$index"))
+
+  def getTradingNameBusinessAddress(index: Int) =
+    http("Get Trading Name Business Address page")
+      .get(s"$baseUrl$route/trading-name-business-address/$index")
+      .header("Cookie", "mdtp=${mdtpCookie}")
+      .check(css(inputSelectorByName("csrfToken"), "value").saveAs("csrfToken"))
+      .check(status.in(200))
+
+  def postTradingNameBusinessAddress(index: Int) =
+    http("Enter Trading Name Business Address")
+      .post(s"$baseUrl$route/trading-name-business-address/$index")
+      .formParam("csrfToken", "${csrfToken}")
+      .formParam("tradingName", "Trading Name")
+      .formParam("line1", "1 Street Name")
+      .formParam("line2", "Suburb")
+      .formParam("townOrCity", "City")
+      .formParam("postCode", "ABC123")
+      .check(status.in(200, 303))
+      .check(header("Location").is(s"$route/registration-tax-type/$index"))
+
+  def getRegistrationType(index: Int) =
+    http("Get Registration Type page")
+      .get(s"$baseUrl$route/registration-tax-type/$index")
+      .header("Cookie", "mdtp=${mdtpCookie}")
+      .check(css(inputSelectorByName("csrfToken"), "value").saveAs("csrfToken"))
+      .check(status.in(200))
+
+  def testRegistrationType(index: Int, registrationType: String) =
+    http("Answer Registration Type Page")
+      .post(s"$baseUrl$route/registration-tax-type/$index")
+      .formParam("csrfToken", "${csrfToken}")
+      .formParam("value", registrationType)
+      .check(status.in(200, 303))
+
+  def postRegistrationType(index: Int, registrationType: String) =
+    if (registrationType == "vatNumber") {
+      testRegistrationType(index, registrationType)
+        .check(header("Location").is(s"$route/eu-vat-number/$index"))
+    } else {
+      testRegistrationType(index, registrationType)
+        .check(header("Location").is(s"$route/eu-tax-identification-number/$index"))
+    }
+
+  def getEuVatNumber(index: Int) =
+    http("Get EU VAT Number page")
+      .get(s"$baseUrl$route/eu-vat-number/$index")
+      .header("Cookie", "mdtp=${mdtpCookie}")
+      .check(css(inputSelectorByName("csrfToken"), "value").saveAs("csrfToken"))
+      .check(status.in(200))
+
+  def postEuVatNumber(index: Int, euVatNumber: String) =
+    http("Enter EU VAT Number")
+      .post(s"$baseUrl$route/eu-vat-number/$index")
+      .formParam("csrfToken", "${csrfToken}")
+      .formParam("value", euVatNumber)
+      .check(status.in(200, 303))
+      .check(header("Location").is(s"$route/check-tax-details/$index"))
+
+  def getEuTaxReference(index: Int) =
+    http("Get EU Tax Reference page")
+      .get(s"$baseUrl$route/eu-tax-identification-number/$index")
+      .header("Cookie", "mdtp=${mdtpCookie}")
+      .check(css(inputSelectorByName("csrfToken"), "value").saveAs("csrfToken"))
+      .check(status.in(200))
+
+  def postEuTaxReference(index: Int, taxReference: String) =
+    http("Enter EU Tax Reference")
+      .post(s"$baseUrl$route/eu-tax-identification-number/$index")
+      .formParam("csrfToken", "${csrfToken}")
+      .formParam("value", taxReference)
+      .check(status.in(200, 303))
+      .check(header("Location").is(s"$route/check-tax-details/$index"))
+
+  def getCheckTaxDetails(index: Int) =
+    http("Get Check Tax Details page")
+      .get(s"$baseUrl$route/check-tax-details/$index")
+      .header("Cookie", "mdtp=${mdtpCookie}")
+      .check(css(inputSelectorByName("csrfToken"), "value").saveAs("csrfToken"))
+      .check(status.in(200))
+
+  def postCheckTaxDetails(index: Int) =
+    http("Submit Check EU VAT Details")
+//      Completion checks not added yet
+//      .post(s"$baseUrl$route/check-tax-details/$index?incompletePromptShown=false")
+      .post(s"$baseUrl$route/check-tax-details/$index")
+      .formParam("csrfToken", "${csrfToken}")
+      .check(status.in(200, 303))
+      .check(header("Location").is(s"$route/add-tax-details"))
+
+  def getAddTaxDetails =
+    http("Get Add VAT Details page")
+      .get(s"$baseUrl$route/add-tax-details")
+      .header("Cookie", "mdtp=${mdtpCookie}")
+      .check(css(inputSelectorByName("csrfToken"), "value").saveAs("csrfToken"))
+      .check(status.in(200))
+
+  def testAddTaxDetails(answer: Boolean) =
+    http("Answer Add EU VAT Details")
+//      Completion checks not added yet
+//      .post(s"$baseUrl$route/add-tax-details?incompletePromptShown=false")
+      .post(s"$baseUrl$route/add-tax-details")
+      .formParam("csrfToken", "${csrfToken}")
+      .formParam("value", answer)
+      .check(status.in(200, 303))
+
+  def postAddTaxDetails(answer: Boolean, index: Option[Int]) =
+    if (answer) {
+      testAddTaxDetails(answer)
+        .check(header("Location").is(s"$route/vat-registered-eu-country/${index.get}"))
+    } else {
+      testAddTaxDetails(answer)
+        .check(header("Location").is(s"$route/website-address/1"))
+    }
 
   def getWebsite(index: Int) =
     http(s"Get Website page $index")
