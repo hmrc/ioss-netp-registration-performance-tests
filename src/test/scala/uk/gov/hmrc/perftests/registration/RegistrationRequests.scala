@@ -19,9 +19,7 @@ package uk.gov.hmrc.perftests.registration
 import io.gatling.core.Predef._
 import io.gatling.core.session.Expression
 import io.gatling.http.Predef._
-import io.gatling.http.request.builder.HttpRequestBuilder
 import uk.gov.hmrc.performance.conf.ServicesConfiguration
-import uk.gov.hmrc.perftests.registration.RegistrationRequests.{inputSelectorByName, loginUrl}
 
 object RegistrationRequests extends ServicesConfiguration {
 
@@ -324,9 +322,7 @@ object RegistrationRequests extends ServicesConfiguration {
 
   def testPreviousSchemesOverview(answer: Boolean) =
     http("Previous Schemes Overview")
-//      completion checks not done yet
-//      .post(s"$baseUrl$route/previous-schemes-overview?incompletePromptShown=false")
-      .post(s"$baseUrl$route/previous-schemes-overview")
+      .post(s"$baseUrl$route/previous-schemes-overview?incompletePromptShown=false")
       .formParam("csrfToken", "${csrfToken}")
       .formParam("value", answer)
       .check(status.in(200, 303))
@@ -466,9 +462,7 @@ object RegistrationRequests extends ServicesConfiguration {
 
   def postCheckTaxDetails(index: Int) =
     http("Submit Check EU VAT Details")
-//      Completion checks not added yet
-//      .post(s"$baseUrl$route/check-tax-details/$index?incompletePromptShown=false")
-      .post(s"$baseUrl$route/check-tax-details/$index")
+      .post(s"$baseUrl$route/check-tax-details/$index?incompletePromptShown=false")
       .formParam("csrfToken", "${csrfToken}")
       .check(status.in(200, 303))
       .check(header("Location").is(s"$route/add-tax-details"))
@@ -482,9 +476,7 @@ object RegistrationRequests extends ServicesConfiguration {
 
   def testAddTaxDetails(answer: Boolean) =
     http("Answer Add EU VAT Details")
-//      Completion checks not added yet
-//      .post(s"$baseUrl$route/add-tax-details?incompletePromptShown=false")
-      .post(s"$baseUrl$route/add-tax-details")
+      .post(s"$baseUrl$route/add-tax-details?incompletePromptShown=false")
       .formParam("csrfToken", "${csrfToken}")
       .formParam("value", answer)
       .check(status.in(200, 303))
@@ -562,9 +554,7 @@ object RegistrationRequests extends ServicesConfiguration {
 
   def postCheckYourAnswers =
     http("Post Check Your Answers page")
-      .post(s"$baseUrl$route/check-your-answers")
-//      Completion checks not added yet
-//      .post(s"$baseUrl$route/check-your-answers/false?waypoints=check-your-answers")
+      .post(s"$baseUrl$route/check-your-answers/false?waypoints=check-your-answers")
       .formParam("csrfToken", "${csrfToken}")
       .check(status.in(200, 303))
       .check(header("Location").is(s"$route/declaration"))
