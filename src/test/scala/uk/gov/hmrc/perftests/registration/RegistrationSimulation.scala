@@ -68,6 +68,8 @@ class RegistrationSimulation extends PerformanceTestRunner {
       postPreviousCountry(3, 1, "MT"),
       getPreviousScheme(3, 1),
       postPreviousScheme(3, 1, "ioss"),
+      getPreviousSchemeIntermediary(3, 1),
+      postPreviousSchemeIntermediary(3, 1),
       getPreviousIossNumber(3, 1),
       postPreviousIossNumber(3, 1, "IM4707744112"),
       getPreviousSchemeAnswers(3),
