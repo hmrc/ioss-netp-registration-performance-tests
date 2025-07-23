@@ -24,7 +24,7 @@ import uk.gov.hmrc.performance.conf.ServicesConfiguration
 object RegistrationRequests extends ServicesConfiguration {
 
   val baseUrl: String = baseUrlFor("ioss-netp-registration-frontend")
-  val route: String   = "/intermediary-netp"
+  val route: String   = "/pay-clients-vat-on-eu-sales/register-new-ioss-client"
 
   val loginUrl = baseUrlFor("auth-login-stub")
 
