@@ -595,6 +595,72 @@ object RegistrationRequests extends ServicesConfiguration {
     http("Get Client Application Complete page")
       .get(s"$baseUrl$route/client-application-complete")
       .header("Cookie", "mdtp=#{mdtpCookie}")
+      .check(css("a", "id").saveAs("codeId"))
+      .check(status.in(200))
+
+  def postAuthorityWizardClient =
+    http("Authority Wizard for Client Login")
+      .post(loginUrl + s"/auth-login-stub/gg-sign-in")
+      .formParam("authorityId", "")
+      .formParam("gatewayToken", "")
+      .formParam("credentialStrength", "strong")
+      .formParam("confidenceLevel", "50")
+      .formParam("affinityGroup", "Organisation")
+      .formParam("email", "user@test.com")
+      .formParam("credentialRole", "User")
+      .formParam("redirectionUrl", baseUrl + route + "/client-code-start/#{codeId}")
+      .check(status.in(200, 303))
+      .check(headerRegex("Set-Cookie", """mdtp=(.*)""").saveAs("mdtpCookie"))
+      .check(header("Location").is(s"$baseUrl$route/client-code-start/#{codeId}"))
+
+  def getCodeStart =
+    http("Enter Activation Code")
+      .get(s"$baseUrl$route/client-code-start/#{codeId}")
+      .header("Cookie", "mdtp=#{mdtpCookie}")
+      .check(status.in(200, 303))
+      .check(header("Location").is(s"$route/client-code-entry/#{codeId}"))
+
+  def getUniqueCodeTestOnly =
+    http("Trigger test-only endpoint")
+      .get(s"$baseUrl$route/test-only/get-client-code/#{codeId}")
+      .header("Cookie", "mdtp=#{mdtpCookie}")
+      .check(status.in(200, 303))
+      .check(css("div", "id").saveAs("activationCode"))
+
+  def getClientCodeEntry =
+    http("Get Activation Code")
+      .get(s"$baseUrl$route/client-code-entry/#{codeId}")
+      .header("Cookie", "mdtp=#{mdtpCookie}")
+      .check(css(inputSelectorByName("csrfToken"), "value").saveAs("csrfToken"))
+      .check(status.in(200, 303))
+
+  def postClientCodeEntry =
+    http("Post Activation Code")
+      .post(s"$baseUrl$route/client-code-entry/#{codeId}")
+      .formParam("csrfToken", "#{csrfToken}")
+      .formParam("value", "#{activationCode}")
+      .check(status.in(303))
+      .check(header("Location").is(s"$route/declaration-client"))
+
+  def getClientDeclaration =
+    http("Get Client Declaration")
+      .get(s"$baseUrl$route/declaration-client")
+      .header("Cookie", "mdtp=#{mdtpCookie}")
+      .check(css(inputSelectorByName("csrfToken"), "value").saveAs("csrfToken"))
+      .check(status.in(200, 303))
+
+  def postClientDeclaration =
+    http("Post Client Declaration")
+      .post(s"$baseUrl$route/declaration-client")
+      .formParam("csrfToken", "#{csrfToken}")
+      .formParam("declaration", "true")
+      .check(status.in(303))
+      .check(header("Location").is(s"$route/successful-registration"))
+
+  def getSuccessfulRegistration =
+    http("Get Successful Registration")
+      .get(s"$baseUrl$route/successful-registration")
+      .header("Cookie", "mdtp=#{mdtpCookie}")
       .check(status.in(200))
 
 }

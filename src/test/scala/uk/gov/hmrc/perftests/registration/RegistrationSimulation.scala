@@ -116,7 +116,15 @@ class RegistrationSimulation extends PerformanceTestRunner {
       postCheckYourAnswers,
       getDeclaration,
       postDeclaration,
-      getClientApplicationComplete
+      getClientApplicationComplete,
+      postAuthorityWizardClient,
+      getCodeStart,
+      getUniqueCodeTestOnly,
+      getClientCodeEntry,
+      postClientCodeEntry,
+      getClientDeclaration,
+      postClientDeclaration,
+      getSuccessfulRegistration
     )
 
   setup("registrationNonUk", "IOSS NETP Registration Journey - Non-UK based") withRequests
@@ -182,7 +190,15 @@ class RegistrationSimulation extends PerformanceTestRunner {
       postCheckYourAnswers,
       getDeclaration,
       postDeclaration,
-      getClientApplicationComplete
+      getClientApplicationComplete,
+      postAuthorityWizardClient,
+      getCodeStart,
+      getUniqueCodeTestOnly,
+      getClientCodeEntry,
+      postClientCodeEntry,
+      getClientDeclaration,
+      postClientDeclaration,
+      getSuccessfulRegistration
     )
 
   runSimulation()
