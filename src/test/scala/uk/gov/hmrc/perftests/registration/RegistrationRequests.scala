@@ -177,41 +177,41 @@ object RegistrationRequests extends ServicesConfiguration {
       .check(status.in(200, 303))
       .check(header("Location").is(s"$route/confirm-tax-details"))
 
-  def getConfirmVatDetails =
-    http("Get Confirm VAT Details page")
+  def getConfirmTaxDetails =
+    http("Get Confirm Tax Details page")
       .get(s"$baseUrl$route/confirm-tax-details")
       .check(css(inputSelectorByName("csrfToken"), "value").saveAs("csrfToken"))
       .check(status.in(200))
 
-  def postConfirmVatDetails =
-    http("Post Confirm VAT Details page")
+  def postConfirmTaxDetails =
+    http("Post Confirm Tax Details page")
       .post(s"$baseUrl$route/confirm-tax-details")
       .formParam("csrfToken", "#{csrfToken}")
       .check(status.in(303))
       .check(header("Location").is(s"$route/have-trading-name"))
 
-  def getHaveUkTradingName =
-    http("Get Have UK Trading Name page")
+  def getHaveTradingName =
+    http("Get Have Trading Name page")
       .get(s"$baseUrl$route/have-trading-name")
       .check(css(inputSelectorByName("csrfToken"), "value").saveAs("csrfToken"))
       .check(status.in(200))
 
-  def postHaveUkTradingName =
-    http("Post Have UK Trading Name page")
+  def postHaveTradingName =
+    http("Post Have Trading Name page")
       .post(s"$baseUrl$route/have-trading-name")
       .formParam("csrfToken", "#{csrfToken}")
       .formParam("value", true)
       .check(status.in(303))
       .check(header("Location").is(s"$route/trading-name/1"))
 
-  def getUkTradingName(index: Int) =
-    http("Get UK Trading Name page")
+  def getTradingName(index: Int) =
+    http("Get Trading Name page")
       .get(s"$baseUrl$route/trading-name/$index")
       .check(css(inputSelectorByName("csrfToken"), "value").saveAs("csrfToken"))
       .check(status.in(200))
 
-  def postUkTradingName(index: Int, tradingName: String) =
-    http("Post UK Trading Name page")
+  def postTradingName(index: Int, tradingName: String) =
+    http("Post Trading Name page")
       .post(s"$baseUrl$route/trading-name/$index")
       .formParam("csrfToken", "#{csrfToken}")
       .formParam("value", tradingName)
