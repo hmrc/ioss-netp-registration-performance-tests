@@ -113,7 +113,7 @@ object RegistrationRequests extends ServicesConfiguration {
       .formParam("csrfToken", "#{csrfToken}")
       .formParam("value", "111222333")
       .check(status.in(200, 303))
-      .check(header("Location").is(s"$route/confirm-vat-details"))
+      .check(header("Location").is(s"$route/confirm-tax-details"))
 
   def getClientCountryBased =
     http("Get Client Country Based page")
@@ -175,59 +175,59 @@ object RegistrationRequests extends ServicesConfiguration {
       .formParam("townOrCity", "townOrCity")
       .formParam("postCode", "ABC")
       .check(status.in(200, 303))
-      .check(header("Location").is(s"$route/confirm-vat-details"))
+      .check(header("Location").is(s"$route/confirm-tax-details"))
 
-  def getConfirmVatDetails =
-    http("Get Confirm VAT Details page")
-      .get(s"$baseUrl$route/confirm-vat-details")
+  def getConfirmTaxDetails =
+    http("Get Confirm Tax Details page")
+      .get(s"$baseUrl$route/confirm-tax-details")
       .check(css(inputSelectorByName("csrfToken"), "value").saveAs("csrfToken"))
       .check(status.in(200))
 
-  def postConfirmVatDetails =
-    http("Post Confirm VAT Details page")
-      .post(s"$baseUrl$route/confirm-vat-details")
+  def postConfirmTaxDetails =
+    http("Post Confirm Tax Details page")
+      .post(s"$baseUrl$route/confirm-tax-details")
       .formParam("csrfToken", "#{csrfToken}")
       .check(status.in(303))
-      .check(header("Location").is(s"$route/have-uk-trading-name"))
+      .check(header("Location").is(s"$route/have-trading-name"))
 
-  def getHaveUkTradingName =
-    http("Get Have UK Trading Name page")
-      .get(s"$baseUrl$route/have-uk-trading-name")
+  def getHaveTradingName =
+    http("Get Have Trading Name page")
+      .get(s"$baseUrl$route/have-trading-name")
       .check(css(inputSelectorByName("csrfToken"), "value").saveAs("csrfToken"))
       .check(status.in(200))
 
-  def postHaveUkTradingName =
-    http("Post Have UK Trading Name page")
-      .post(s"$baseUrl$route/have-uk-trading-name")
+  def postHaveTradingName =
+    http("Post Have Trading Name page")
+      .post(s"$baseUrl$route/have-trading-name")
       .formParam("csrfToken", "#{csrfToken}")
       .formParam("value", true)
       .check(status.in(303))
-      .check(header("Location").is(s"$route/uk-trading-name/1"))
+      .check(header("Location").is(s"$route/trading-name/1"))
 
-  def getUkTradingName(index: Int) =
-    http("Get UK Trading Name page")
-      .get(s"$baseUrl$route/uk-trading-name/$index")
+  def getTradingName(index: Int) =
+    http("Get Trading Name page")
+      .get(s"$baseUrl$route/trading-name/$index")
       .check(css(inputSelectorByName("csrfToken"), "value").saveAs("csrfToken"))
       .check(status.in(200))
 
-  def postUkTradingName(index: Int, tradingName: String) =
-    http("Post UK Trading Name page")
-      .post(s"$baseUrl$route/uk-trading-name/$index")
+  def postTradingName(index: Int, tradingName: String) =
+    http("Post Trading Name page")
+      .post(s"$baseUrl$route/trading-name/$index")
       .formParam("csrfToken", "#{csrfToken}")
       .formParam("value", tradingName)
       .check(status.in(303))
-      .check(header("Location").is(s"$route/add-uk-trading-name"))
+      .check(header("Location").is(s"$route/add-trading-name"))
 
   def getAddTradingName =
     http("Get Add Trading Name page")
-      .get(s"$baseUrl$route/add-uk-trading-name")
+      .get(s"$baseUrl$route/add-trading-name")
       .header("Cookie", "mdtp=#{mdtpCookie}")
       .check(css(inputSelectorByName("csrfToken"), "value").saveAs("csrfToken"))
       .check(status.in(200))
 
   def testAddTradingName(answer: Boolean) =
     http("Add Trading Name")
-      .post(s"$baseUrl$route/add-uk-trading-name")
+      .post(s"$baseUrl$route/add-trading-name")
       .formParam("csrfToken", "#{csrfToken}")
       .formParam("value", answer)
       .check(status.in(200, 303))
@@ -235,7 +235,7 @@ object RegistrationRequests extends ServicesConfiguration {
   def postAddTradingName(answer: Boolean, index: Option[Int]) =
     if (answer) {
       testAddTradingName(answer)
-        .check(header("Location").is(s"$route/uk-trading-name/${index.get}"))
+        .check(header("Location").is(s"$route/trading-name/${index.get}"))
     } else {
       testAddTradingName(answer)
         .check(header("Location").is(s"$route/previous-oss"))
