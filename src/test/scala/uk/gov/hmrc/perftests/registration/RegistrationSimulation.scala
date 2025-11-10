@@ -24,7 +24,7 @@ class RegistrationSimulation extends PerformanceTestRunner {
   setup("registrationUkVrn", "IOSS NETP Registration Journey - UK Based VRN") withRequests
     (
       getAuthorityWizard,
-      postAuthorityWizard,
+      postAuthorityWizard("/pay-clients-vat-on-eu-sales/register-new-ioss-client"),
       getClientUkBased,
       postClientUkBased(true),
       getClientHasVatNumber,
@@ -130,7 +130,7 @@ class RegistrationSimulation extends PerformanceTestRunner {
   setup("registrationNonUk", "IOSS NETP Registration Journey - Non-UK based") withRequests
     (
       getAuthorityWizard,
-      postAuthorityWizard,
+      postAuthorityWizard("/pay-clients-vat-on-eu-sales/register-new-ioss-client"),
       getClientUkBased,
       postClientUkBased(false),
       getClientHasVatNumber,
@@ -199,6 +199,22 @@ class RegistrationSimulation extends PerformanceTestRunner {
       getClientDeclaration,
       postClientDeclaration,
       getSuccessfulRegistration
+    )
+
+  setup("amendRegistration", "IOSS NETP Amend Registration Journey") withRequests
+    (
+      getAuthorityWizard,
+      postAuthorityWizard("/pay-clients-vat-on-eu-sales/register-new-ioss-client/start-amend-journey/IM9001144771"),
+      getAmendJourney,
+      getAmendAddTradingName,
+      postAmendAddTradingName(true),
+      getAmendTradingName(3),
+      postAmendTradingName(3, "3rd trading name amend"),
+      getAmendAddTradingName,
+      postAmendAddTradingName(false),
+      getChangeYourRegistration,
+      postChangeYourRegistration,
+      getSuccessfulAmend
     )
 
   runSimulation()
