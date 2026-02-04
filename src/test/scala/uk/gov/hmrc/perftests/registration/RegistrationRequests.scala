@@ -185,7 +185,7 @@ object RegistrationRequests extends ServicesConfiguration {
 
   def postConfirmTaxDetails =
     http("Post Confirm Tax Details page")
-      .post(s"$baseUrl$route/confirm-tax-details")
+      .post(s"$baseUrl$route/confirm-tax-details/false")
       .formParam("csrfToken", "#{csrfToken}")
       .check(status.in(303))
       .check(header("Location").is(s"$route/have-trading-name"))
