@@ -1,5 +1,5 @@
 /*
- * Copyright 2025 HM Revenue & Customs
+ * Copyright 2026 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -111,7 +111,7 @@ object RegistrationRequests extends ServicesConfiguration {
     http("Enter Client Vat Number")
       .post(s"$baseUrl$route/client-vat-number")
       .formParam("csrfToken", "#{csrfToken}")
-      .formParam("value", "111222333")
+      .formParam("value", "#{vrn}")
       .check(status.in(200, 303))
       .check(header("Location").is(s"$route/confirm-tax-details"))
 
@@ -156,7 +156,7 @@ object RegistrationRequests extends ServicesConfiguration {
     http("Enter Client Tax Reference")
       .post(s"$baseUrl$route/client-tax-reference")
       .formParam("csrfToken", "#{csrfToken}")
-      .formParam("value", "ABC123DEF1")
+      .formParam("value", "#{ftr}")
       .check(status.in(200, 303))
       .check(header("Location").is(s"$route/client-business-name"))
 
