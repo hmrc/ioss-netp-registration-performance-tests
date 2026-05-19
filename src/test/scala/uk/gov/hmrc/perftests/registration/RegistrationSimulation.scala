@@ -231,7 +231,7 @@ class RegistrationSimulation extends PerformanceTestRunner {
   setup("updateEmailPendingRegistration", "IOSS NETP Update Email on Pending Registration Journey") withRequests
     (
       getAuthorityWizard,
-      postAuthorityWizard("/pay-clients-vat-on-eu-sales/manage-ioss-returns-payments-clients/your-account"),
+      postAuthorityWizardDashboard("/pay-clients-vat-on-eu-sales/manage-ioss-returns-payments-clients/your-account"),
       getPendingClients,
       getClientNotActivated,
       getClientUpdateEmail,
