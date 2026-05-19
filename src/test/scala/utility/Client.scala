@@ -25,12 +25,16 @@ object Client {
   val connTimeoutMs     = 120000
   val readTimeoutMs     = 120000
 
-  def clearAll(url: String): HttpResponse[String] = {
-    val request = Http(url)
+  def clearAll(url: String): HttpResponse[String] =
+    Http(url)
       .method("DELETE")
       .timeout(connTimeoutMs = connTimeoutMs, readTimeoutMs = readTimeoutMs)
       .asString
-    request
-  }
+
+  def generatePendingClients(url: String): HttpResponse[String] =
+    Http(url)
+      .method("PUT")
+      .timeout(connTimeoutMs = connTimeoutMs, readTimeoutMs = readTimeoutMs)
+      .asString
 
 }

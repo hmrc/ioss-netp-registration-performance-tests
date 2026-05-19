@@ -18,7 +18,7 @@ package uk.gov.hmrc.perftests.registration
 
 import uk.gov.hmrc.performance.simulation.PerformanceTestRunner
 import uk.gov.hmrc.perftests.registration.RegistrationRequests._
-import utility.Client.clearAll
+import utility.Client.{clearAll, generatePendingClients}
 
 class RegistrationSimulation extends PerformanceTestRunner {
 
@@ -27,6 +27,9 @@ class RegistrationSimulation extends PerformanceTestRunner {
   before {
     println("Clearing existing pending registrations from the database")
     clearAll(s"$netpRegistrationBaseUrl/ioss-netp-registration/test-only/delete-pending-registrations")
+    generatePendingClients(
+      s"$netpRegistrationBaseUrl/ioss-netp-registration/test-only/create-pending-registrations/IN9001234567/1000"
+    )
   }
 
   setup("registrationUkVrn", "IOSS NETP Registration Journey - UK Based VRN") withRequests
@@ -224,6 +227,20 @@ class RegistrationSimulation extends PerformanceTestRunner {
       postChangeYourRegistration,
       getSuccessfulAmend
     )
+
+  setup("updateEmailPendingRegistration", "IOSS NETP Update Email on Pending Registration Journey") withRequests
+    (
+      getAuthorityWizard,
+      postAuthorityWizardDashboard("/pay-clients-vat-on-eu-sales/manage-ioss-returns-payments-clients/your-account"),
+      getPendingClients,
+      getClientNotActivated,
+      getClientUpdateEmail,
+      postClientUpdateEmail("hi@hi.com")
+    )
+
+  after {
+    clearAll(s"$netpRegistrationBaseUrl/ioss-netp-registration/test-only/delete-pending-registrations")
+  }
 
   runSimulation()
 }
