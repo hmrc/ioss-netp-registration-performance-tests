@@ -23,8 +23,10 @@ import uk.gov.hmrc.performance.conf.ServicesConfiguration
 
 object RegistrationRequests extends ServicesConfiguration {
 
-  val baseUrl: String = baseUrlFor("ioss-netp-registration-frontend")
-  val route: String   = "/pay-clients-vat-on-eu-sales/register-new-ioss-client"
+  val baseUrl: String          = baseUrlFor("ioss-netp-registration-frontend")
+  val dashboardBaseUrl: String = baseUrlFor("ioss-intermediary-dashboard-frontend")
+  val route: String            = "/pay-clients-vat-on-eu-sales/register-new-ioss-client"
+  val dashboardRoute: String   = "/pay-clients-vat-on-eu-sales/manage-ioss-returns-payments-clients"
 
   val loginUrl = baseUrlFor("auth-login-stub")
 
@@ -37,6 +39,29 @@ object RegistrationRequests extends ServicesConfiguration {
       .check(status.in(200, 303))
 
   def postAuthorityWizard(redirectUrl: String) =
+    http("Enter Auth login credentials ")
+      .post(loginUrl + s"/auth-login-stub/gg-sign-in")
+      .formParam("csrfToken", "#{csrfToken}")
+      .formParam("authorityId", "")
+      .formParam("gatewayToken", "")
+      .formParam("credentialStrength", "strong")
+      .formParam("confidenceLevel", "50")
+      .formParam("affinityGroup", "Organisation")
+      .formParam("email", "user@test.com")
+      .formParam("credentialRole", "User")
+      .formParam("redirectionUrl", baseUrl + redirectUrl)
+      .formParam("enrolment[0].name", "HMRC-MTD-VAT")
+      .formParam("enrolment[0].taxIdentifier[0].name", "VRN")
+      .formParam("enrolment[0].taxIdentifier[0].value", "100000001")
+      .formParam("enrolment[0].state", "Activated")
+      .formParam("enrolment[1].name", "HMRC-IOSS-INT")
+      .formParam("enrolment[1].taxIdentifier[0].name", "IntNumber")
+      .formParam("enrolment[1].taxIdentifier[0].value", "IN9001234567")
+      .formParam("enrolment[1].state", "Activated")
+      .check(status.in(200, 303))
+      .check(headerRegex("Set-Cookie", """mdtp=(.*)""").saveAs("mdtpCookie"))
+
+  def postAuthorityWizardDashboard(redirectUrl: String) =
     http("Enter Auth login credentials ")
       .post(loginUrl + s"/auth-login-stub/gg-sign-in")
       .formParam("csrfToken", "#{csrfToken}")
@@ -717,6 +742,7 @@ object RegistrationRequests extends ServicesConfiguration {
   def getChangeYourRegistration =
     http("Get Change Your Registration page")
       .get(s"$baseUrl$route/change-your-registration")
+      .header("Cookie", "mdtp=#{mdtpCookie}")
       .check(css(inputSelectorByName("csrfToken"), "value").saveAs("csrfToken"))
       .check(status.in(200))
 
@@ -732,5 +758,33 @@ object RegistrationRequests extends ServicesConfiguration {
       .get(s"$baseUrl$route/successful-amend")
       .header("Cookie", "mdtp=#{mdtpCookie}")
       .check(status.in(200))
+
+  def getPendingClients =
+    http("Get Pending Clients")
+      .get(s"$dashboardBaseUrl$dashboardRoute/client-awaiting-activation")
+      .header("Cookie", "mdtp=#{mdtpCookie}")
+      .check(status.in(200))
+      .check(css("table tr:nth-child(#{randomInt(1,1000)}) td a", "id").saveAs("clientJourneyId"))
+
+  def getClientNotActivated =
+    http("Get Client not Activated")
+      .get(s"$baseUrl$route/client-not-activated/#{clientJourneyId}")
+      .header("Cookie", "mdtp=#{mdtpCookie}")
+      .check(status.in(200))
+
+  def getClientUpdateEmail =
+    http("Get Client Update Email")
+      .get(s"$baseUrl$route/update-client-email-address/#{clientJourneyId}")
+      .header("Cookie", "mdtp=#{mdtpCookie}")
+      .check(css(inputSelectorByName("csrfToken"), "value").saveAs("csrfToken"))
+      .check(status.in(200))
+
+  def postClientUpdateEmail(answer: String) =
+    http("Post Client Update Email")
+      .post(s"$baseUrl$route/update-client-email-address/#{clientJourneyId}")
+      .formParam("csrfToken", "#{csrfToken}")
+      .formParam("value", answer)
+      .check(status.in(200, 303))
+      .check(header("Location").is(s"$route/client-email-updated/#{clientJourneyId}"))
 
 }
