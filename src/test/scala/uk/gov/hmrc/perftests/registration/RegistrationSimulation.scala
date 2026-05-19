@@ -239,6 +239,7 @@ class RegistrationSimulation extends PerformanceTestRunner {
     )
 
   after {
+    println("Clearing existing pending registrations from the database after tests")
     clearAll(s"$netpRegistrationBaseUrl/ioss-netp-registration/test-only/delete-pending-registrations")
   }
 
