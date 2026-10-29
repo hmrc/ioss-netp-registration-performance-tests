@@ -22,8 +22,9 @@ import utility.Client.{clearAll, generatePendingClients}
 
 class RegistrationSimulation extends PerformanceTestRunner {
 
-  val netpRegistrationBaseUrl: String = baseUrlFor("ioss-netp-registration-frontend")
-  val deletePendingRegistrationUrl: String = s"$netpRegistrationBaseUrl/pay-clients-vat-on-eu-sales/register-new-ioss-client/test-only/delete-pending-registrations"
+  val netpRegistrationBaseUrl: String      = baseUrlFor("ioss-netp-registration-frontend")
+  val deletePendingRegistrationUrl: String =
+    s"$netpRegistrationBaseUrl/pay-clients-vat-on-eu-sales/register-new-ioss-client/test-only/delete-pending-registrations"
 
   before {
     println("Clearing existing pending registrations from the database")
@@ -45,8 +46,8 @@ class RegistrationSimulation extends PerformanceTestRunner {
       postClientVatNumber,
       getConfirmTaxDetails,
       postConfirmTaxDetails,
-      getHaveTradingName,
-      postHaveTradingName,
+      getIsOnlyTradingName,
+      postIsOnlyTradingName,
       getTradingName(1),
       postTradingName(1, "1st trading name"),
       getAddTradingName,
@@ -157,8 +158,8 @@ class RegistrationSimulation extends PerformanceTestRunner {
       postClientAddress,
       getConfirmTaxDetails,
       postConfirmTaxDetails,
-      getHaveTradingName,
-      postHaveTradingName,
+      getIsOnlyTradingName,
+      postIsOnlyTradingName,
       getTradingName(1),
       postTradingName(1, "trading name"),
       getAddTradingName,
